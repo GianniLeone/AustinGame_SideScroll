@@ -15,8 +15,9 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody2D rb;
     private bool facingRight = true;
     private float moveDirection;
-    private bool isJumping = false; 
-    private bool isGrounded; 
+    private bool isGrounded = false;
+
+    private bool initiateJump = false;
 
     //
     private void Awake()
@@ -38,6 +39,9 @@ public class PlayerMovement : MonoBehaviour
     {
         //Check if grounded
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, checkRadius, groundObjects);
+
+        Debug.Log("Grounded: " + isGrounded);
+        //Debug.Log("x: " + rb.velocity.x + " y: " + rb.velocity.x);
         // Move player
         Move();
     }
@@ -45,11 +49,11 @@ public class PlayerMovement : MonoBehaviour
     private void Move()
     {
         rb.velocity = new Vector2(moveDirection * moveSpeed, rb.velocity.y);
-        if(isJumping)
+        if(initiateJump)
         {
             rb.AddForce(new Vector2(0f, jumpForce));
-        } 
-        isJumping = false;
+            initiateJump = false;
+        }
     }
 
     private void Animate()
@@ -69,7 +73,7 @@ public class PlayerMovement : MonoBehaviour
         moveDirection = Input.GetAxis("Horizontal");
         if(Input.GetButtonDown("Jump") && isGrounded)
         { 
-            isJumping = true;
+            initiateJump = true;
         }
     }
 
@@ -78,5 +82,4 @@ public class PlayerMovement : MonoBehaviour
         facingRight = !facingRight;
         transform.Rotate(0f, 180f, 0f);
     }
-
 }
