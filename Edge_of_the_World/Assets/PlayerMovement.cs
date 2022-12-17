@@ -22,9 +22,22 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         // Get user input
-        moveDirection = Input.GetAxis("Horizontal");
+        processInputs();
 
         // Animate
+        animateCharacter();
+
+        // Move player
+        moveCharacter();
+    }
+
+    private void processInputs()
+    {
+        moveDirection = Input.GetAxis("Horizontal");
+    }
+
+    private void animateCharacter()
+    {
         if (moveDirection > 0 && !facingRight)
         {
             flipCharacter();
@@ -33,8 +46,10 @@ public class PlayerMovement : MonoBehaviour
         {
             flipCharacter();
         }
+    }
 
-        // Move player
+    private void moveCharacter()
+    {
         rb.velocity = new Vector2(moveDirection * moveSpeed, rb.velocity.y);
     }
 
