@@ -5,81 +5,36 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
 
-    public float moveSpeed;
-    public float jumpForce;
-    public Transform ceilingCheck;
-    public Transform groundCheck;
-    public LayerMask groundObjects;
-    public float checkRadius; 
+    public CharacterController2D controller;
 
-    private Rigidbody2D rb;
-    private bool facingRight = true;
-    private float moveDirection;
-    private bool isGrounded = false;
+    public float runSpeed = 40f;
 
-    private bool initiateJump = false;
-
-    //
-    private void Awake()
-    {
-        rb = GetComponent<Rigidbody2D>();
-    }
+    float horizontalMove = 0f;
+    bool jump = false;
+    bool crouch = false;
 
     // Update is called once per frame
     void Update()
     {
-        // Get user input
-        ProcessInputs();
+        horizontalMove = Input.GetAxisRaw("Horizontal") * runSpeed;
 
-        // Animate
-        Animate();
-    }
-
-    private void FixedUpdate()
-    {
-        //Check if grounded
-        isGrounded = Physics2D.OverlapCircle(groundCheck.position, checkRadius, groundObjects);
-
-        Debug.Log("Grounded: " + isGrounded);
-        //Debug.Log("x: " + rb.velocity.x + " y: " + rb.velocity.x);
-        // Move player
-        Move();
-    }
-
-    private void Move()
-    {
-        rb.velocity = new Vector2(moveDirection * moveSpeed, rb.velocity.y);
-        if(initiateJump)
+        if (Input.GetButtonDown("Jump"))
         {
-            rb.AddForce(new Vector2(0f, jumpForce));
-            initiateJump = false;
+            jump = true;
         }
-    }
 
-    private void Animate()
-    {
-        if (moveDirection > 0 && !facingRight)
+        if (Input.GetButtonDown("Crouch"))
         {
-            flipCharacter();
-        }
-        else if (moveDirection < 0 && facingRight)
+            crouch = true;
+        } else if (Input.GetButtonUp("Crouch"))
         {
-            flipCharacter();
+            crouch = false;
         }
     }
 
-    private void ProcessInputs()
+    void FixedUpdate ()
     {
-        moveDirection = Input.GetAxis("Horizontal");
-        if(Input.GetButtonDown("Jump") && isGrounded)
-        { 
-            initiateJump = true;
-        }
-    }
-
-    private void flipCharacter()
-    {
-        facingRight = !facingRight;
-        transform.Rotate(0f, 180f, 0f);
+        controller.Move(horizontalMove * Time.fixedDeltaTime, false, jump);
+        jump = false;
     }
 }
